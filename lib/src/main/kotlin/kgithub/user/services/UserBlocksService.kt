@@ -4,9 +4,9 @@ import io.ktor.client.features.*
 import io.ktor.client.statement.*
 import kgithub.GitHub
 import kgithub.GitHubRequester
+import kgithub.user.dtos.UserResponse
 import kgithub.user.services.UserPaths.BLOCKS_PATH
 import kgithub.user.services.UserPaths.ME_PATH
-import kgithub.user.dtos.UserResponse
 
 suspend fun GitHub.usersBlockedByMe(): List<UserResponse> =
     GitHubRequester.get(
@@ -20,9 +20,9 @@ suspend fun GitHub.isUserBlockedByMe(userName: String): Boolean =
             path = "$ME_PATH$BLOCKS_PATH/$userName",
             accessToken = this.accessToken
         ).status.value == 204
-    } catch (e: ClientRequestException) {
-        when (e.response.status.value) {
-            404 -> false
+    } catch (e: Exception) {
+        when {
+            e is ClientRequestException && e.response.status.value == 404 -> false
             else -> throw e
         }
     }
