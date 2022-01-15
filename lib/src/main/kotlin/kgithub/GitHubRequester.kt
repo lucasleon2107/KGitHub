@@ -1,12 +1,8 @@
 package kgithub
 
 import io.ktor.client.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
-import io.ktor.client.features.logging.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import kotlinx.serialization.json.Json as JsonBuilder
 
 class GitHubRequester {
     companion object {
@@ -14,18 +10,7 @@ class GitHubRequester {
         internal const val BASE_URL = "https://api.github.com"
 
         @PublishedApi
-        internal val httpClient: HttpClient = HttpClient {
-            install(JsonFeature) {
-                serializer = KotlinxSerializer(JsonBuilder {
-                    ignoreUnknownKeys = true
-                    coerceInputValues = true
-                })
-            }
-            install(Logging) {
-                logger = Logger.DEFAULT
-                level = LogLevel.ALL
-            }
-        }
+        internal val httpClient: HttpClient = RestClient.create()
 
         @PublishedApi
         internal suspend inline fun <reified T> request(
